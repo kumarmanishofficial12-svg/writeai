@@ -7,19 +7,25 @@ export default async function handler(req, res) {
   const user = await getUserFromRequest(req)
   if (!user) return res.status(401).json({ error: 'Please login' })
 
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, plan } = req.body
-  const body = razorpay_order_id + '|' + razorpay_payment_id
-  const expectedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET).update(body).digest('hex')
+  const { txnid, amount, productinfo, firstname, email, status, hash, plan } = req.body
+  const salt = process.env.PAYU_MERCHANT_SALT
 
-  if (expectedSignature !== razorpay_signature) {
+  const hashString = `${salt}|${status}|||||||||||${email}|${firstname}|${productinfo}|${amount}|${txnid}|${process.env.PAYU_MERCHANT_KEY}`
+  const expectedHash = crypto.createHash('sha512').update(hashString).digest('hex')
+
+  if (expectedHash !== hash) {
     return res.status(400).json({ error: 'Payment verification failed' })
+  }
+
+  if (status !== 'success') {
+    return res.status(400).json({ error: 'Payment was not successful' })
   }
 
   const periodEnd = new Date()
   periodEnd.setMonth(periodEnd.getMonth() + 1)
 
   await supabaseAdmin.from('subscriptions').insert({
-    user_id: user.id, razorpay_payment_id, plan, status: 'active',
+    user_id: user.id, razorpay_payment_id: txnid, plan, status: 'active',
     amount: { starter: 499, pro: 999, agency: 2499 }[plan], currency: 'INR',
     current_period_start: new Date().toISOString(), current_period_end: periodEnd.toISOString(),
   })
