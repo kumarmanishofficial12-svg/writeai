@@ -3,21 +3,50 @@ import Head from 'next/head'
 
 const TOOLS = [
   { id: 'email', icon: '✉', bg: '#E6F1FB', name: 'Cold Email', desc: 'Emails that get replies' },
-  { id: 'ads', icon: '📢', bg: '#FAECE7', name: 'Ad Copy', desc: 'Facebook & Google ads' },
+  { id: 'ads', icon: '📢', bg: '#FAECE7', name: 'Ad Copy', desc: 'Facebook, Google & Instagram ads' },
+  { id: 'whatsapp', icon: '💬', bg: '#EAF3DE', name: 'WhatsApp Caption', desc: 'WhatsApp business messages' },
+  { id: 'instagram', icon: '📸', bg: '#FBEAF0', name: 'Instagram Caption', desc: 'Viral Instagram posts & bios', proOnly: true },
   { id: 'proposal', icon: '📄', bg: '#EAF3DE', name: 'Business Proposal', desc: 'Win more clients', proOnly: true },
   { id: 'linkedin', icon: '🔗', bg: '#E6F1FB', name: 'LinkedIn Post', desc: 'Viral thought leadership', proOnly: true },
   { id: 'product', icon: '🛍', bg: '#FAEEDA', name: 'Product Description', desc: 'Convert visitors to buyers', proOnly: true },
   { id: 'blog', icon: '✍', bg: '#FBEAF0', name: 'Blog Article', desc: 'SEO-optimized content', proOnly: true },
+  { id: 'rewrite', icon: '🔄', bg: '#E1F5EE', name: 'Rewrite & Improve', desc: 'Make any content better', proOnly: true },
+  { id: 'subject', icon: '📧', bg: '#FAECE7', name: 'Email Subject Lines', desc: 'High open-rate subjects', proOnly: true },
+  { id: 'youtube', icon: '▶', bg: '#FCEBEB', name: 'YouTube Script', desc: 'Engaging video scripts', proOnly: true },
+  { id: 'review', icon: '⭐', bg: '#FAEEDA', name: 'Review Response', desc: 'Reply to customer reviews', proOnly: true },
 ]
 
 const TONES = ['Professional', 'Friendly', 'Persuasive', 'Formal', 'Witty', 'Empathetic']
-const LANGUAGES = ['English', 'Hindi', 'Spanish', 'French', 'German', 'Arabic', 'Portuguese', 'Chinese', 'Japanese', 'Russian', 'Bengali', 'Turkish', 'Korean', 'Italian']
+const LANGUAGES = ['English', 'Hindi', 'Arabic', 'Spanish', 'French', 'German', 'Portuguese', 'Chinese (Simplified)', 'Chinese (Traditional)', 'Japanese', 'Russian', 'Bengali', 'Turkish', 'Korean', 'Italian', 'Urdu', 'Persian (Farsi)', 'Dutch', 'Swedish', 'Norwegian', 'Polish', 'Greek', 'Hebrew', 'Malay', 'Indonesian']
 
-const PLANS = [
-  { id: 'starter', name: 'Starter', price: 499, features: ['50 generations/month', '2 writing tools', 'Basic support'], proOnly: false },
-  { id: 'pro', name: 'Pro', price: 999, features: ['Unlimited generations', 'All 6 tools', 'History & drafts', '3 team members', 'Priority support'], popular: true },
-  { id: 'agency', name: 'Agency', price: 2499, features: ['Everything in Pro', 'Unlimited team members', 'White-label', 'Full API access', '24/7 support'] },
-]
+const REGION_PRICING = {
+  india: {
+    label: '🇮🇳 India', currency: '₹', symbol: 'INR',
+    plans: [
+      { id: 'starter', name: 'Starter', price: 199, period: '/mo', features: ['100 generations/month', '3 writing tools', '25 languages', 'Email support'] },
+      { id: 'pro', name: 'Pro', price: 499, period: '/mo', features: ['Unlimited generations', 'All 12 tools', '25 languages', 'History & drafts', 'Priority support'], popular: true },
+      { id: 'agency', name: 'Agency', price: 1299, period: '/mo', features: ['Everything in Pro', 'Unlimited team members', 'Brand voice memory', 'White-label', 'API access', '24/7 support'] },
+    ]
+  },
+  middleeast: {
+    label: '🇦🇪 Middle East', currency: '$', symbol: 'USD',
+    plans: [
+      { id: 'starter', name: 'Starter', price: 5, period: '/mo', features: ['100 generations/month', '3 writing tools', '25 languages', 'Arabic support', 'Email support'] },
+      { id: 'pro', name: 'Pro', price: 12, period: '/mo', features: ['Unlimited generations', 'All 12 tools', '25 languages', 'Arabic support', 'History & drafts', 'Priority support'], popular: true },
+      { id: 'agency', name: 'Agency', price: 29, period: '/mo', features: ['Everything in Pro', 'Unlimited team members', 'Brand voice memory', 'White-label', 'API access', '24/7 support'] },
+    ]
+  },
+  europe: {
+    label: '🇪🇺 Europe / Global', currency: '$', symbol: 'USD',
+    plans: [
+      { id: 'starter', name: 'Starter', price: 9, period: '/mo', features: ['100 generations/month', '3 writing tools', '25 languages', 'Email support'] },
+      { id: 'pro', name: 'Pro', price: 19, period: '/mo', features: ['Unlimited generations', 'All 12 tools', '25 languages', 'History & drafts', 'Priority support'], popular: true },
+      { id: 'agency', name: 'Agency', price: 49, period: '/mo', features: ['Everything in Pro', 'Unlimited team members', 'Brand voice memory', 'White-label', 'API access', '24/7 support'] },
+    ]
+  },
+}
+
+const PLANS = REGION_PRICING.india.plans
 
 export default function Home() {
   const [screen, setScreen] = useState('landing')
@@ -35,6 +64,8 @@ export default function Home() {
   const [authError, setAuthError] = useState('')
   const [authLoading, setAuthLoading] = useState(false)
   const [upgradePlan, setUpgradePlan] = useState('pro')
+  const [selectedRegion, setSelectedRegion] = useState(null)
+  const [regionPlans, setRegionPlans] = useState(null)
   const [showUpgrade, setShowUpgrade] = useState(false)
   const [paymentLoading, setPaymentLoading] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -258,7 +289,7 @@ export default function Home() {
               7-day free trial — no credit card required
             </div>
             <h1 style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.3, marginBottom: 12 }}>Write professional content 10x faster with AI</h1>
-            <p style={{ fontSize: 15, color: '#555', lineHeight: 1.65, marginBottom: 8 }}>Emails, ads, proposals, blog posts — generated in seconds. For any business, in any language.</p>
+            <p style={{ fontSize: 15, color: '#555', lineHeight: 1.65, marginBottom: 8 }}>12 AI writing tools. 25 languages including Arabic & Hindi. Better than Jasper at 1/4th the price. Used by businesses in India, UAE, UK & Europe.</p>
             <div style={{ fontSize: 12, color: '#999', marginBottom: 24 }}>No credit card required · Cancel anytime · Full access for 7 days</div>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button className="btn green" onClick={() => s('signup')} style={{ padding: '11px 28px', fontSize: 14 }}>Start free 7-day trial</button>
@@ -290,32 +321,57 @@ export default function Home() {
           </div>
 
           {/* Pricing */}
-          <div id="plans" style={{ padding: '28px 24px 40px', maxWidth: 720, margin: '0 auto' }}>
-            <div style={{ fontSize: 22, fontWeight: 600, textAlign: 'center', marginBottom: 6 }}>Start free, then choose your plan</div>
+          <div id="plans" style={{ padding: '28px 24px 40px', maxWidth: 760, margin: '0 auto' }}>
+            <div style={{ fontSize: 22, fontWeight: 600, textAlign: 'center', marginBottom: 6 }}>Simple, transparent pricing</div>
             <div style={{ fontSize: 13, color: '#666', textAlign: 'center', marginBottom: 20 }}>All plans start with a 7-day free trial. No credit card required.</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 14 }}>
-              {PLANS.map(p => (
-                <div key={p.id} style={{ background: '#fff', border: p.popular ? '2px solid #185FA5' : '1px solid #eee', borderRadius: 12, padding: 18, display: 'flex', flexDirection: 'column' }}>
-                  {p.popular && <div style={{ background: '#E6F1FB', color: '#0C447C', fontSize: 10, padding: '2px 9px', borderRadius: 20, display: 'inline-block', marginBottom: 8, alignSelf: 'flex-start' }}>Most popular</div>}
-                  <div style={{ fontSize: 15, fontWeight: 600 }}>{p.name}</div>
-                  <div style={{ fontSize: 26, fontWeight: 600, margin: '8px 0 2px' }}>₹{p.price.toLocaleString()}</div>
-                  <div style={{ fontSize: 11, color: '#888', marginBottom: 12 }}>/month after trial</div>
-                  <ul style={{ listStyle: 'none', flex: 1 }}>
-                    {p.features.map(f => (
-                      <li key={f} style={{ fontSize: 12, color: '#555', display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 6 }}>
-                        <span style={{ width: 14, height: 14, borderRadius: '50%', background: '#EAF3DE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                          <svg width="8" height="8" viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2" stroke="#27500A" strokeWidth="1.5" fill="none"/></svg>
-                        </span>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <button className={p.popular ? 'btn green' : 'btn'} onClick={() => s('signup')} style={{ width: '100%', marginTop: 14, fontSize: 12, padding: 9 }}>
-                    Start free trial
+
+            {/* Region Selector */}
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <div style={{ fontSize: 13, color: '#444', marginBottom: 12, fontWeight: 500 }}>Select your region to see pricing:</div>
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+                {Object.entries(REGION_PRICING).map(([key, region]) => (
+                  <button key={key} onClick={() => { setSelectedRegion(key); setRegionPlans(region.plans) }}
+                    style={{ padding: '10px 20px', borderRadius: 8, border: selectedRegion === key ? '2px solid #185FA5' : '1px solid #ddd', background: selectedRegion === key ? '#E6F1FB' : '#fff', color: selectedRegion === key ? '#0C447C' : '#444', fontSize: 13, fontWeight: selectedRegion === key ? 600 : 400, cursor: 'pointer', transition: 'all .15s' }}>
+                    {region.label}
                   </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+
+            {/* Plans — show only after region selected */}
+            {!selectedRegion && (
+              <div style={{ textAlign: 'center', padding: '40px 20px', background: '#f9f9f9', borderRadius: 12, border: '1px dashed #ddd' }}>
+                <div style={{ fontSize: 32, marginBottom: 12 }}>🌍</div>
+                <div style={{ fontSize: 15, fontWeight: 500, color: '#444', marginBottom: 6 }}>Select your region above</div>
+                <div style={{ fontSize: 13, color: '#888' }}>We offer special pricing for India, Middle East & Europe</div>
+              </div>
+            )}
+
+            {selectedRegion && regionPlans && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 14 }}>
+                {regionPlans.map(p => (
+                  <div key={p.id} style={{ background: '#fff', border: p.popular ? '2px solid #185FA5' : '1px solid #eee', borderRadius: 12, padding: 18, display: 'flex', flexDirection: 'column' }}>
+                    {p.popular && <div style={{ background: '#E6F1FB', color: '#0C447C', fontSize: 10, padding: '2px 9px', borderRadius: 20, display: 'inline-block', marginBottom: 8, alignSelf: 'flex-start' }}>Most popular</div>}
+                    <div style={{ fontSize: 15, fontWeight: 600 }}>{p.name}</div>
+                    <div style={{ fontSize: 26, fontWeight: 600, margin: '8px 0 2px' }}>{REGION_PRICING[selectedRegion].currency}{p.price.toLocaleString()}</div>
+                    <div style={{ fontSize: 11, color: '#888', marginBottom: 12 }}>{p.period} after trial</div>
+                    <ul style={{ listStyle: 'none', flex: 1 }}>
+                      {p.features.map(f => (
+                        <li key={f} style={{ fontSize: 12, color: '#555', display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 6 }}>
+                          <span style={{ width: 14, height: 14, borderRadius: '50%', background: '#EAF3DE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                            <svg width="8" height="8" viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2" stroke="#27500A" strokeWidth="1.5" fill="none"/></svg>
+                          </span>
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <button className={p.popular ? 'btn green' : 'btn'} onClick={() => s('signup')} style={{ width: '100%', marginTop: 14, fontSize: 12, padding: 9 }}>
+                      Start free trial
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -608,19 +664,36 @@ export default function Home() {
             <div style={{ fontSize: 13, color: '#666', lineHeight: 1.6, marginBottom: 24 }}>
               {isExpired ? 'Your 7-day trial has ended. Choose a plan to continue.' : 'Lock in your plan today and keep full access to all tools.'}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 20 }}>
-              {PLANS.map(p => (
-                <div key={p.id} onClick={() => setUpgradePlan(p.id)}
-                  style={{ border: upgradePlan === p.id ? '2px solid #185FA5' : '1px solid #ddd', borderRadius: 10, padding: '12px 8px', cursor: 'pointer', background: upgradePlan === p.id ? '#E6F1FB' : '#fff', transition: 'all .15s' }}>
-                  {p.popular && <div style={{ fontSize: 10, background: '#E6F1FB', color: '#0C447C', padding: '2px 6px', borderRadius: 20, marginBottom: 4, display: 'inline-block' }}>Popular</div>}
-                  <div style={{ fontSize: 13, fontWeight: 500, color: upgradePlan === p.id ? '#0C447C' : '#111' }}>{p.name}</div>
-                  <div style={{ fontSize: 18, fontWeight: 600, margin: '4px 0' }}>₹{p.price.toLocaleString()}</div>
-                  <div style={{ fontSize: 11, color: '#888' }}>/month</div>
+            {/* Region selector in upgrade overlay */}
+            {!selectedRegion && (
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 12, color: '#666', marginBottom: 8, textAlign: 'center' }}>Select your region:</div>
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                  {Object.entries(REGION_PRICING).map(([key, region]) => (
+                    <button key={key} onClick={() => { setSelectedRegion(key); setRegionPlans(region.plans) }}
+                      style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid #ddd', background: '#fff', fontSize: 12, cursor: 'pointer' }}>
+                      {region.label}
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
+
+            {(regionPlans || REGION_PRICING.india.plans) && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 20 }}>
+                {(regionPlans || REGION_PRICING.india.plans).map(p => (
+                  <div key={p.id} onClick={() => setUpgradePlan(p.id)}
+                    style={{ border: upgradePlan === p.id ? '2px solid #185FA5' : '1px solid #ddd', borderRadius: 10, padding: '12px 8px', cursor: 'pointer', background: upgradePlan === p.id ? '#E6F1FB' : '#fff', transition: 'all .15s' }}>
+                    {p.popular && <div style={{ fontSize: 10, background: '#E6F1FB', color: '#0C447C', padding: '2px 6px', borderRadius: 20, marginBottom: 4, display: 'inline-block' }}>Popular</div>}
+                    <div style={{ fontSize: 13, fontWeight: 500, color: upgradePlan === p.id ? '#0C447C' : '#111' }}>{p.name}</div>
+                    <div style={{ fontSize: 18, fontWeight: 600, margin: '4px 0' }}>{REGION_PRICING[selectedRegion || 'india'].currency}{p.price.toLocaleString()}</div>
+                    <div style={{ fontSize: 11, color: '#888' }}>{p.period}</div>
+                  </div>
+                ))}
+              </div>
+            )}
             <button className="btn solid" onClick={handlePayment} disabled={paymentLoading} style={{ width: '100%', padding: 12, fontSize: 14, marginBottom: 10 }}>
-              {paymentLoading ? <span className="spinner"></span> : `Upgrade to ${upgradePlan.charAt(0).toUpperCase() + upgradePlan.slice(1)} — ₹${PLANS.find(p => p.id === upgradePlan)?.price.toLocaleString()}/month`}
+              {paymentLoading ? <span className="spinner"></span> : `Upgrade to ${upgradePlan.charAt(0).toUpperCase() + upgradePlan.slice(1)} — ${REGION_PRICING[selectedRegion||'india'].currency}${(regionPlans || REGION_PRICING.india.plans).find(p => p.id === upgradePlan)?.price || 0}${(regionPlans || REGION_PRICING.india.plans).find(p=>p.id===upgradePlan)?.period || '/mo'}`}
             </button>
             {!isExpired && (
               <div style={{ fontSize: 12, color: '#999', cursor: 'pointer' }} onClick={() => setShowUpgrade(false)}>Maybe later — continue trial</div>
